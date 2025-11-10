@@ -33,9 +33,10 @@ const Admin = () => {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -90,6 +91,9 @@ const Admin = () => {
     setLoading(true);
 
     try {
+      // Convert phone to email format for auth
+      const email = `${phone.replace(/\+/g, '')}@3omda.admin`;
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -109,8 +113,8 @@ const Admin = () => {
           setIsAdmin(true);
           loadData();
           toast({
-            title: "Welcome!",
-            description: "Successfully logged in",
+            title: "مرحباً!",
+            description: "تم تسجيل الدخول بنجاح",
           });
         } else {
           await supabase.auth.signOut();
@@ -119,8 +123,8 @@ const Admin = () => {
       }
     } catch (error: any) {
       toast({
-        title: "Login Failed",
-        description: error.message,
+        title: "فشل تسجيل الدخول",
+        description: "رقم الهاتف أو كلمة المرور غير صحيحة",
         variant: "destructive",
       });
     } finally {
@@ -157,11 +161,46 @@ const Admin = () => {
     }
   };
 
+  const handleImageUpload = async (file: File): Promise<string | null> => {
+    try {
+      setUploadingImage(true);
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('dish-images')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage
+        .from('dish-images')
+        .getPublicUrl(filePath);
+
+      return data.publicUrl;
+    } catch (error: any) {
+      toast({ title: "خطأ", description: "فشل رفع الصورة", variant: "destructive" });
+      return null;
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const handleAddDish = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     
     try {
+      let imageUrl = formData.get("image_url") as string || null;
+      
+      // Handle image upload if file is selected
+      const imageFile = formData.get("image_file") as File;
+      if (imageFile && imageFile.size > 0) {
+        const uploadedUrl = await handleImageUpload(imageFile);
+        if (uploadedUrl) imageUrl = uploadedUrl;
+      }
+
       const { error } = await supabase.from("dishes").insert({
         restaurant_id: formData.get("restaurant_id") as string,
         category_id: formData.get("category_id") as string,
@@ -170,15 +209,15 @@ const Admin = () => {
         name_fr: formData.get("name_fr") as string,
         description: formData.get("description") as string,
         price: parseFloat(formData.get("price") as string),
-        image_url: formData.get("image_url") as string || null,
+        image_url: imageUrl,
       });
 
       if (error) throw error;
 
-      toast({ title: "Success", description: "Dish added" });
+      toast({ title: "نجح", description: "تمت إضافة الطبق" });
       e.currentTarget.reset();
     } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ title: "خطأ", description: error.message, variant: "destructive" });
     }
   };
 
@@ -195,23 +234,25 @@ const Admin = () => {
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-primary/10 to-accent/10">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle className="text-2xl">Admin Login</CardTitle>
-            <CardDescription>Sign in to manage 3omda Delivre</CardDescription>
+            <CardTitle className="text-2xl">تسجيل دخول المدير</CardTitle>
+            <CardDescription>سجل الدخول لإدارة 3omda Delivre</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="phone">رقم الهاتف</Label>
                 <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  id="phone"
+                  type="tel"
+                  placeholder="+213658592303"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
                   required
+                  dir="ltr"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">كلمة المرور</Label>
                 <Input
                   id="password"
                   type="password"
@@ -221,7 +262,7 @@ const Admin = () => {
                 />
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
-                Sign In
+                تسجيل الدخول
               </Button>
             </form>
           </CardContent>
@@ -365,7 +406,7 @@ const Admin = () => {
                   </div>
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="price">Price (DA)</Label>
+                      <Label htmlFor="price">السعر (دج)</Label>
                       <Input
                         id="price"
                         name="price"
@@ -375,13 +416,22 @@ const Admin = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="image_url">Image URL (optional)</Label>
-                      <Input id="image_url" name="image_url" type="url" />
+                      <Label htmlFor="image_file">صورة الطبق</Label>
+                      <Input 
+                        id="image_file" 
+                        name="image_file" 
+                        type="file" 
+                        accept="image/jpeg,image/jpg,image/png,image/webp"
+                      />
                     </div>
                   </div>
-                  <Button type="submit" className="gap-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="image_url">أو رابط الصورة (اختياري)</Label>
+                    <Input id="image_url" name="image_url" type="url" placeholder="https://..." />
+                  </div>
+                  <Button type="submit" className="gap-2" disabled={uploadingImage}>
                     <Plus className="h-4 w-4" />
-                    Add Dish
+                    {uploadingImage ? "جاري رفع الصورة..." : "إضافة طبق"}
                   </Button>
                 </form>
               </CardContent>
