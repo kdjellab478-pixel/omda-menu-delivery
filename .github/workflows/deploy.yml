@@ -1,0 +1,37 @@
+name: Deploy Vite Project to Pages
+
+on:
+  push:
+    branches:
+      - main # قم بتغيير main إلى الفرع الذي تستخدمه للنشر إذا كان مختلفًا
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # 1. سحب الكود من المستودع
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      # 2. إعداد بيئة Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # يُوصى باستخدام إصدار LTS مثل 20 أو 22
+          
+      # 3. تثبيت الاعتمادات (Dependencies)
+      - name: Install Dependencies (using npm)
+        run: npm install # استخدم npm install أو bun install إذا كنت تستخدم bun
+        
+      # 4. بناء المشروع (Build)
+      - name: Build Project with Vite
+        run: npm run build
+        
+      # 5. نشر مجلد dist إلى GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist # تأكد من أن مجلد البناء هو 'dist'
+          cname: '' # اترك هذا فارغًا إذا لم تستخدم نطاقًا مخصصًا
