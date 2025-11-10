@@ -1,73 +1,52 @@
-# Welcome to your Lovable project
+# 3omda Delivre - Food Delivery Platform
 
-## Project info
+منصة توصيل الطعام لبوسعادة - Plateforme de livraison de nourriture pour Bou Saada
 
-**URL**: https://lovable.dev/projects/928d8ece-baf0-4668-9c3b-3670768c5462
+## 🍽️ About / حول
 
-## How can I edit this code?
+3omda Delivre is a food delivery platform for Bou Saada, Algeria. Order from your favorite local restaurants and get your food delivered via WhatsApp.
 
-There are several ways of editing your application.
+عمدة ديليفري هي منصة توصيل الطعام لمدينة بوسعادة، الجزائر. اطلب من مطاعمك المحلية المفضلة واحصل على طعامك عبر الواتساب.
 
-**Use Lovable**
+## ✨ Features / المميزات
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/928d8ece-baf0-4668-9c3b-3670768c5462) and start prompting.
+- 🌐 Multi-language support (Arabic, French, English)
+- 📱 WhatsApp ordering integration
+- 🎨 Beautiful, responsive design inspired by Algerian cuisine
+- 👨‍💼 Admin dashboard for restaurant and menu management
+- 🔐 Secure authentication system
+- 🗄️ Full backend with Lovable Cloud (Supabase)
 
-Changes made via Lovable will be committed automatically to this repo.
+## 📞 Contact / اتصل بنا
 
-**Use your preferred IDE**
+- 📱 WhatsApp: +213 658 592 303
+- 📱 WhatsApp: +213 658 160 260
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🚀 Getting Started
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Admin Access
 
-Follow these steps:
+To access the admin panel:
+1. Go to `/admin`
+2. Sign in with admin credentials
+3. Start adding restaurants and dishes!
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### For Development
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+```bash
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## 🛠️ Tech Stack
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
+- React + TypeScript
 - Vite
-- TypeScript
-- React
-- shadcn-ui
 - Tailwind CSS
+- Shadcn UI Components
+- Lovable Cloud (Supabase backend)
+- React Router
 
-## How can I deploy this project?
+## 📝 License
 
-Simply open [Lovable](https://lovable.dev/projects/928d8ece-baf0-4668-9c3b-3670768c5462) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+© 2025 3omda Delivre - Bou Saada, Algeria
